@@ -1,5 +1,6 @@
 const API_KEY = "4fbcf702f75f4510b1ff32d9d4ca34d9";
 const url = "https://newsapi.org/v2/top-headlines?country=in&q=";
+const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
 
 window.addEventListener("load", () => fetchNews("India"));
 
@@ -9,13 +10,29 @@ function reload() {
 
 async function fetchNews(query) {
     try {
-        const fetchUrl = query ? `${url}${query}&apiKey=${API_KEY}` : `https://newsapi.org/v2/top-headlines?country=in&apiKey=${API_KEY}`;
-        const res = await fetch(fetchUrl, {
+        let fetchUrl = query ? `${url}${query}&apiKey=${API_KEY}` : `https://newsapi.org/v2/top-headlines?country=in&apiKey=${API_KEY}`;
+        
+        // Try direct request first
+        let res = await fetch(fetchUrl, {
             method: 'GET',
             headers: {
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'User-Agent': 'Mozilla/5.0'
             }
         });
+        
+        // If CORS error, try with proxy
+        if (!res.ok && res.status === 426) {
+            console.log("Direct request failed, trying with CORS proxy...");
+            fetchUrl = CORS_PROXY + fetchUrl;
+            res = await fetch(fetchUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'User-Agent': 'Mozilla/5.0'
+                }
+            });
+        }
         
         if (!res.ok) {
             console.error(`HTTP Error: ${res.status} ${res.statusText}`);
