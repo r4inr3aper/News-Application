@@ -58,8 +58,11 @@ nav {
     padding-block: 8px;
 }
 
-.company-logo img {
-    width: 120px;
+.company-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--accent-color);
+    text-decoration: none !important;
 }
 
 .nav-links ul {
